@@ -2,7 +2,6 @@ var Map = (function() {
     var self = {};
 
     var canvas;
-    var context;
 
     var offset = {};
 
@@ -30,7 +29,6 @@ var Map = (function() {
     /**********************************/
     self.init = function(c) {
         canvas = c;
-        context = canvas.getContext('2d');
 
         tiles = [
             [Resources.grass, Resources.stone, Resources.grass, Resources.stone, Resources.grass],
@@ -43,30 +41,21 @@ var Map = (function() {
         self.resize();
     };
 
-    self.draw = function() {
-        context.clearRect(0, 0, canvas.width, canvas.height);
+    self.draw = function(context) {
+        // Tiles
         for (var a = 0; a < tiles.length; a++) {
             for (var b = 0; b < tiles[a].length; b++) {
                 context.drawImage(tiles[a][b], x(b), y(a));
             }
         }
 
+        // Character
         context.drawImage(Resources.character, x(posCharX), y(posCharY) - 40);
+
+        // Character name
         context.fillStyle = '#FF0000';
-        //context.font = "bold 16px Arial";
         context.font = '16px Arial';
         context.fillText(Cookie.get('username'), 25 + x(posCharX), y(posCharY));
-        /*context.beginPath();
-        context.moveTo(xCenter, 0);
-        context.lineTo(xCenter, canvas.height);
-        context.closePath();
-        context.stroke();
-
-        context.beginPath();
-        context.moveTo(0, yCenter);
-        context.lineTo(canvas.width, yCenter);
-        context.closePath();
-        context.stroke();*/
     };
     self.up = function() {
         if (posCharY - 1 >= 0) {
