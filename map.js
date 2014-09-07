@@ -98,5 +98,37 @@ var Map = (function() {
         offset.y = Math.floor(canvas.height / 2) - Math.floor(height / 2) - 50;
     };
 
+    self.listener = function(event) {
+        console.log(event);
+        switch(event.which) {
+            case 87:
+            //case 119:
+                console.log("UP");
+                Map.up();
+                break;
+            case 83:
+            //case 115:
+                console.log("DOWN");
+                Map.down();
+                break;
+            case 65:
+            //case 97:
+                console.log("LEFT");
+                Map.left();
+                break;
+            case 68:
+            //case 100:
+                console.log("RIGHT");
+                Map.right();
+                break;
+            //case 13:
+            case 84:
+                event.stopPropagation();
+                Game.setState(3);
+                console.log("ENTER");
+                break;
+        }
+    }
+
     return self;
 })();

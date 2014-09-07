@@ -20,27 +20,67 @@ var Loader = (function() {
     return self;
 })();
 
-window.addEventListener('load', function() {
+var Message = (function() {
+    var message = '';
+    var self = {};
 
-    var STATE = 0;
-    var MESSAGE = '';
+    self.draw = function(context) {
+        context.font = '16px Arial';
+        context.fillStyle = '#0000FF';
+        context.fillText(message, 200, 200);
+    };
 
-    var canvas = document.getElementById('canvas');
-    var context = canvas.getContext('2d');
+    self.listener = function(e) {
+        switch(e.which) {
+            case 13:
+                message = '';
+                Game.setState(2);
+                break;
 
-    canvas.style.backgroundColor = "#000000";
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+            case 8:
+                message = message.substring(0, (message.length - 1));
+                break;
 
-    Cookie.set('username', 'cairns');
-    Resources.init();
+            default:
+                console.log(e);
+                message += String.fromCharCode(e.charCode);
+                e.stopPropagation();
+                break;
+        }
+    };
 
-    var loop = function() {
+    return self;
+})();
+
+var Game = (function() {
+    var state = 0;
+    var canvas;
+    var context;
+
+    var self = {};
+
+    self.init = function() {
+        canvas = document.getElementById('canvas');
+        context = canvas.getContext('2d');
+
+        canvas.style.backgroundColor = "#000000";
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Display message asking for name if not set.
+        Cookie.set('username', 'cairns');
+        Resources.init();
+
+        // Want a draw loop that considers execution time for smoother effect.
+        window.setInterval(self.run, 33);
+    };
+
+    self.run = function() {
         // TODO Place the most common call at the top and least common at the bottom.
-        switch(STATE) {
+        switch(state) {
             case 0:
                 if (Loader.done()) {
-                    STATE = 1;
+                    self.setState(1);
                 }
                 break;
             case 1:
@@ -53,114 +93,38 @@ window.addEventListener('load', function() {
                     canvas.height = window.innerHeight;
                     Map.resize();
                 };
-                STATE = 2;
+                self.setState(2);
                 break;
             case 2:
                 Map.draw();
                 break;
             case 3:
-                //Map.draw();
+                Map.draw();
+                Message.draw(context);
                 break;
         }
     };
-    // Want a draw loop that considers execution time for more stable
-    window.setInterval(loop, 33);
 
-    /*document.addEventListener('keydown', function(e) {
-
-        if (STATE == 2) {
-            switch(e.keyCode) {
-                case 87:
-                    console.log("UP");
-                    Map.up();
-                    break;
-                case 83:
-                    console.log("DOWN");
-                    Map.down();
-                    break;
-                case 65:
-                    console.log("LEFT");
-                    Map.left();
-                    break;
-                case 68:
-                    console.log("RIGHT");
-                    Map.right();
-                    break;
-                case 13:
-                    STATE = 3;
-                    console.log("ENTER");
-                    break;
-            }
-        } else if (STATE == 3) {
-            switch(e.keyCode) {
-                case 13:
-                    MESSAGE = '';
-                    STATE = 2;
-                    break;
-
-                default:
-                    var char = String.fromCharCode(e.keyCode);
-                    if (e.)
-                    MESSAGE += ;
-                    console.log(String.fromCharCode(e.keyCode));
-                    context.font = '16px Arial';
-                    context.clearRect(0, 0, canvas.width, canvas.height);
-                    context.fillText(MESSAGE, 200, 200);
-                    break;
-            }
+    self.setState = function(s) {
+        switch(s) {
+            case 2:
+                console.log('TWO');
+                document.removeEventListener('keypress', Message.listener, true);
+                document.addEventListener('keydown', Map.listener, true);
+                break;
+            case 3:
+                console.log('THREE');
+                document.removeEventListener('keydown', Map.listener, true);
+                document.addEventListener('keypress', Message.listener, true);
+                break;
         }
-    });*/
+        state = s;
+    };
 
-    document.addEventListener('keypress', function(e) {
+    return self;
+})();
 
-        if (STATE == 2) {
-            switch(e.which) {
-                //case 87:
-                case 119:
-                    console.log("UP");
-                    Map.up();
-                    break;
-                //case 83:
-                case 115:
-                    console.log("DOWN");
-                    Map.down();
-                    break;
-                //case 65:
-                case 97:
-                    console.log("LEFT");
-                    Map.left();
-                    break;
-                //case 68:
-                case 100:
-                    console.log("RIGHT");
-                    Map.right();
-                    break;
-                //case 13:
-                case 13:
-                    STATE = 3;
-                    console.log("ENTER");
-                    break;
-            }
-        } else if (STATE == 3) {
-            switch(e.which) {
-                case 13:
-                    MESSAGE = '';
-                    STATE = 2;
-                    break;
-
-                default:
-                    console.log(e);
-                    var char = String.fromCharCode(e.charCode);
-                    MESSAGE += char;
-                    console.log(String.fromCharCode(e.keyCode));
-                    context.font = '16px Arial';
-                    context.clearRect(0, 0, canvas.width, canvas.height);
-                    context.fillText(MESSAGE, 200, 200);
-                    break;
-            }
-        }
-    });
-});
+window.addEventListener('load', Game.init);
 
 // TODO Implement call of the position.
 /*
