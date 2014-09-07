@@ -25,6 +25,10 @@ var Message = (function() {
     var message = '';
     var self = {};
 
+    self.add = function(string) {
+        log.push(string);
+    };
+
     self.draw = function(context) {
         context.font = '16px Arial';
         context.fillStyle = '#01579b';
@@ -100,6 +104,7 @@ var Login = (function() {
             // Enter
             case 13:
                 Cookie.set('username', username);
+                Message.add('Welcome ' + username + '!');
                 Game.setState(0);
                 break;
 
@@ -175,8 +180,6 @@ var Game = (function() {
 
                     self.center.x = Math.floor(canvas.width / 2);
                     self.center.y = Math.floor(canvas.height / 2);
-
-                    Map.resize();
                 };
                 self.setState(2);
                 break;
@@ -184,6 +187,19 @@ var Game = (function() {
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 Map.draw(context);
                 Message.draw(context);
+
+                context.beginPath();
+                context.moveTo(self.center.x, 0);
+                context.lineTo(self.center.x, canvas.height);
+                context.closePath();
+                context.stroke();
+
+                context.beginPath();
+                context.moveTo(0, self.center.y);
+                context.lineTo(canvas.width, self.center.y);
+                context.closePath();
+                context.stroke();
+
                 break;
             case 3:
                 context.clearRect(0, 0, canvas.width, canvas.height);

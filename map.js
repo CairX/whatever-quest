@@ -1,14 +1,6 @@
 var Map = (function() {
     var self = {};
 
-    var canvas;
-
-    var offset = {};
-
-    // TODO Make more dynamic.
-    var width = 5 * 100;
-    var height = 5 * 80;
-
     var tiles;
 
     var posCharX = 2;
@@ -17,19 +9,17 @@ var Map = (function() {
 
     /* Private
     /**********************************/
-    var x = function(position) {
-        return (position * 100) + offset.x;
+    var relativeX = function(position) {
+        return (((position - posCharX - 0.5) * 100) + Game.center.x);
     };
-    var y = function(position) {
-        return (position * 80) + offset.y;
+    var relativeY = function(position) {
+        return (((position - posCharY - 0.5) * 80) + Game.center.y) - 50;
     };
 
 
     /* Public
     /**********************************/
-    self.init = function(c) {
-        canvas = c;
-
+    self.init = function() {
         tiles = [
             [Resources.grass, Resources.stone, Resources.grass, Resources.stone, Resources.grass],
             [Resources.stone, Resources.grass, Resources.stone, Resources.grass, Resources.stone],
@@ -37,54 +27,44 @@ var Map = (function() {
             [Resources.stone, Resources.grass, Resources.stone, Resources.grass, Resources.stone],
             [Resources.grass, Resources.stone, Resources.grass, Resources.stone, Resources.grass]
         ];
-
-        self.resize();
     };
 
     self.draw = function(context) {
         // Tiles
-        for (var a = 0; a < tiles.length; a++) {
-            for (var b = 0; b < tiles[a].length; b++) {
-                context.drawImage(tiles[a][b], x(b), y(a));
+        for (var y = 0; y < tiles.length; y++) {
+            for (var x = 0; x < tiles[y].length; x++) {
+                context.drawImage(tiles[y][x], relativeX(x), relativeY(y));
             }
         }
 
         // Character
-        context.drawImage(Resources.character, x(posCharX), y(posCharY) - 40);
+        context.drawImage(Resources.character, relativeX(posCharX), relativeY(posCharY) - 40);
 
         // Character name
         context.fillStyle = '#FF0000';
         context.font = '16px Arial';
-        context.fillText(Cookie.get('username'), 25 + x(posCharX), y(posCharY));
+        context.textAlign = 'center';
+        context.fillText(Cookie.get('username'), Game.center.x, relativeY(posCharY));
     };
     self.up = function() {
         if (posCharY - 1 >= 0) {
-            offset.y += 80;
             posCharY -= 1;
         }
     };
     self.down = function() {
         if (posCharY + 1 < tiles.length) {
-            offset.y -= 80;
             posCharY += 1;
         }
     };
     self.left = function() {
         if (posCharX -1 >= 0) {
-            offset.x += 100;
             posCharX -= 1;
         }
     };
     self.right = function() {
         if (posCharX + 1 < tiles[posCharY].length) {
-            offset.x -= 100;
             posCharX += 1;
         }
-    };
-
-    self.resize = function() {
-        offset.x = Math.floor(canvas.width / 2) - Math.floor(width / 2);
-        offset.y = Math.floor(canvas.height / 2) - Math.floor(height / 2) - 50;
     };
 
     self.listener = function(event) {
