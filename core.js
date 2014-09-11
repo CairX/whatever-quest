@@ -32,6 +32,7 @@ var Message = (function() {
     self.draw = function(context) {
         context.font = '16px Arial';
         context.fillStyle = '#01579b';
+        context.textAlign = 'left';
 
         var latest = log.length < 10 ? log : log.slice(log.length - 10);
         for (var i = 0; i < latest.length; i ++) {
