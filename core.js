@@ -65,7 +65,7 @@ var Login = (function() {
             case 13:
                 Connection.send({ 'action': 'login', 'username': username })
                 Cookie.set('username', username);
-                Chat.add('Welcome ' + username + '!');
+                Chat.add('Welcome to Whatever Quest!');
                 Game.setState(0);
                 break;
 
