@@ -3,8 +3,8 @@ var Chat = (function() {
     var message = '';
     var self = {};
 
-    self.add = function(string) {
-        log.push(string);
+    self.add = function(username, string) {
+        log.push({ 'username': username, 'message': string });
     };
 
     self.draw = function(context) {
@@ -14,7 +14,8 @@ var Chat = (function() {
 
         var latest = log.length < 10 ? log : log.slice(log.length - 10);
         for (var i = 0; i < latest.length; i ++) {
-            context.fillText(latest[i], 200, (200+(20*i)));
+            var m = '[' + latest[i].username + ']: ' + latest[i].message;
+            context.fillText(m, 200, (200+(20*i)));
         }
 
         context.fillText(message, 200, 800);
@@ -30,7 +31,8 @@ var Chat = (function() {
 
             // Enter
             case 13:
-                self.add(message);
+                //self.add(message);
+                Connection.send({ 'action': 'chat', 'username': Cookie.get('username'), 'chat': message });
                 message = '';
                 Game.setState(2);
                 break;
@@ -46,6 +48,10 @@ var Chat = (function() {
                 event.stopPropagation();
                 break;
         }
+    };
+
+    self.received = function(data) {
+        self.add(data.username, data.chat);
     };
 
     return self;

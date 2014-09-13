@@ -21,13 +21,14 @@ var Login = (function() {
 
         context.fillText(username + '|', Game.center.x, (Game.center.y - height / 2 + 68));
 
+        if (status) {
+            context.fillText(status, Game.center.x, (Game.center.y - height / 2 + (68 + 4 + 16 + 16)));
+        }
+
         context.font = '48px Arial';
         context.fillStyle = '#e91e63';
         context.fillText('Whatever Quest', Game.center.x, (Game.center.y - height / 2 - 96));
 
-        if (status) {
-            context.fillText(status, Game.center.x, (Game.center.y - height / 2 + (68 + 4 + 16 + 16)));
-        }
     };
 
     self.listener = function(event) {
@@ -58,7 +59,7 @@ var Login = (function() {
         switch (data.status) {
             case 'success':
                 Cookie.set('username', username);
-                Chat.add('Welcome to Whatever Quest!');
+                Chat.add('Game', 'Welcome to Whatever Quest!');
                 Game.setState(0);
                 break;
             case 'exists':

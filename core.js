@@ -112,9 +112,13 @@ var Game = (function() {
     };
 
     self.received = function(data) {
+        console.log(data);
         switch (data.action) {
             case 'login':
                 Login.received(data);
+                break;
+            case 'chat':
+                Chat.received(data);
                 break;
         }
     };

@@ -15,7 +15,7 @@ class User(object):
 def broadcast(message):
     for user in users:
         if user.websocket.open:
-            yield user.websocket.send(message)
+            yield from user.websocket.send(json.dumps(message))
         else:
             try:
                 users.remove(user)
@@ -57,8 +57,8 @@ def handler(websocket, path):
 
         if action == 'login':
             yield from login(username, websocket)
-        elif action == 'message':
-            broadcast(message.get('message'))
+        elif action == 'chat':
+            yield from broadcast(message)
 
 
 start_server = websockets.serve(handler, '0.0.0.0', 8765)
