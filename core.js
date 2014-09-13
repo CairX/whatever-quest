@@ -112,15 +112,14 @@ var Game = (function() {
     };
 
     self.received = function(data) {
-
+        switch (data.action) {
+            case 'login':
+                Login.received(data);
+                break;
+        }
     };
 
     return self;
 })();
 
 window.addEventListener('load', Game.init);
-
-// TODO Implement call of the position.
-
-
-

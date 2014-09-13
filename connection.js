@@ -15,7 +15,7 @@ var Connection = (function() {
             var data = JSON.parse(received_msg);
             console.log(data);
             console.log(data.action);
-            //Game.received(data);
+            Game.received(data);
         };
         socket.onclose = function() {
             console.log("Connection closed.");

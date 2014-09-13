@@ -4,6 +4,7 @@ var Login = (function() {
     var height = 120;
 
     var username = '';
+    var status = '';
 
     self.draw = function (context) {
         context.fillStyle = '#e1f5fe';
@@ -18,7 +19,11 @@ var Login = (function() {
         context.textBaseline = 'top';
         context.fillText('Username', Game.center.x, (Game.center.y - height / 2 + 32));
 
-        context.fillText(username + '|', Game.center.x, ((Game.center.y - height / 2 + 68)));
+        context.fillText(username + '|', Game.center.x, (Game.center.y - height / 2 + 68));
+
+        if (status) {
+            context.fillText(status, Game.center.x, (Game.center.y - height / 2 + (68 + 4 + 16 + 16)));
+        }
     };
 
     self.listener = function(event) {
@@ -30,9 +35,6 @@ var Login = (function() {
             // Enter
             case 13:
                 Connection.send({ 'action': 'login', 'username': username })
-                Cookie.set('username', username);
-                Chat.add('Welcome to Whatever Quest!');
-                Game.setState(0);
                 break;
 
             // Backspace
@@ -44,6 +46,19 @@ var Login = (function() {
                 console.log(event);
                 username += String.fromCharCode(event.charCode);
                 event.stopPropagation();
+                break;
+        }
+    };
+
+    self.received = function(data) {
+        switch (data.status) {
+            case 'success':
+                Cookie.set('username', username);
+                Chat.add('Welcome to Whatever Quest!');
+                Game.setState(0);
+                break;
+            case 'exists':
+                status = 'Username already taken.'
                 break;
         }
     };
