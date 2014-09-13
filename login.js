@@ -21,6 +21,10 @@ var Login = (function() {
 
         context.fillText(username + '|', Game.center.x, (Game.center.y - height / 2 + 68));
 
+        context.font = '48px Arial';
+        context.fillStyle = '#e91e63';
+        context.fillText('Whatever Quest', Game.center.x, (Game.center.y - height / 2 - 96));
+
         if (status) {
             context.fillText(status, Game.center.x, (Game.center.y - height / 2 + (68 + 4 + 16 + 16)));
         }
