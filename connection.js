@@ -1,21 +1,24 @@
 var Connection = (function() {
     var socket;
 
+    var open = function() {
+        return (socket.readyState == 1);
+    };
+
     var self = {};
 
     self.init = function() {
         socket = new WebSocket("ws://localhost:8765");
 
+        socket.onerror = function(error) {
+            console.log(error);
+            console.log('Connection error.')
+        };
         socket.onopen = function() {
             console.log('Connection opened.')
         };
-        socket.onmessage = function (evt) {
-            var received_msg = evt.data;
-            console.log("MESSAGE: " + received_msg);
-            var data = JSON.parse(received_msg);
-            console.log(data);
-            console.log(data.action);
-            Game.received(data);
+        socket.onmessage = function (message) {
+            Game.received(JSON.parse(message.data));
         };
         socket.onclose = function() {
             console.log("Connection closed.");
@@ -23,7 +26,9 @@ var Connection = (function() {
     };
 
     self.send = function(data) {
-        socket.send(JSON.stringify(data));
+        if (open()) {
+            socket.send(JSON.stringify(data));
+        }
     };
 
     return self;
