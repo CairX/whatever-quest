@@ -86,7 +86,16 @@ var Map = (function() {
         }
     };
 
-    self.listener = function(event) {
+    self.activate = function() {
+        document.addEventListener('keydown', keydown, true);
+        document.addEventListener('keypress', keypress, true);
+    };
+    self.deactivate = function() {
+        document.removeEventListener('keydown', keydown, true);
+        document.removeEventListener('keypress', keypress, true);
+    };
+
+    var keydown = function(event) {
         switch(event.which) {
             case 87:
                 Map.up();
@@ -103,8 +112,11 @@ var Map = (function() {
             case 68:
                 Map.right();
                 break;
-
-            case 84:
+        }
+    };
+    var keypress = function(event) {
+        switch(event.which) {
+            case 13:
                 Game.setState(State.CHAT);
                 break;
         }

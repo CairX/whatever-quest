@@ -31,7 +31,14 @@ var Login = (function() {
 
     };
 
-    self.listener = function(event) {
+    self.activate = function() {
+        document.addEventListener('keypress', listener, true);
+    };
+    self.deactivate = function() {
+        document.removeEventListener('keypress', listener, true);
+    };
+
+    var listener = function(event) {
         switch(event.which) {
             // Escape
             case 0:
@@ -48,7 +55,6 @@ var Login = (function() {
                 break;
 
             default:
-                console.log(event);
                 username += String.fromCharCode(event.charCode);
                 event.stopPropagation();
                 break;

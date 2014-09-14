@@ -54,14 +54,14 @@ var Chat = (function() {
 
     self.activate = function() {
         active = true;
-        document.addEventListener('keypress', self.listener, true);
+        document.addEventListener('keypress', listener, true);
     };
     self.deactivate = function() {
         active = false;
-        document.removeEventListener('keypress', self.listener, true);
+        document.removeEventListener('keypress', listener, true);
     };
 
-    self.listener = function(event) {
+    var listener = function(event) {
         switch(event.which) {
             // Escape
             case 0:

@@ -80,20 +80,20 @@ var Game = (function() {
         switch(s) {
             case State.PLAYING:
                 Chat.deactivate();
-                document.addEventListener('keydown', Map.listener, true);
+                Map.activate();
                 break;
 
             case State.CHAT:
-                document.removeEventListener('keydown', Map.listener, true);
+                Map.deactivate();
                 Chat.activate();
                 break;
 
             case State.LOGIN:
-                document.addEventListener('keypress', Login.listener, true);
+                Login.activate();
                 break;
 
             case State.LOADER:
-                document.removeEventListener('keypress', Login.listener, true);
+                Login.deactivate();
                 break;
         }
         state = s;
