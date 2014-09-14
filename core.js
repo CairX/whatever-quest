@@ -7,11 +7,7 @@ var Game = (function() {
     self.size = { width: 0, height: 0 };
     self.center = { x: 0, y: 0 };
 
-    self.init = function() {
-        canvas = document.getElementById('canvas');
-        context = canvas.getContext('2d');
-
-        canvas.style.backgroundColor = "#b3e5fc";
+    var resize = function() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
@@ -20,6 +16,15 @@ var Game = (function() {
 
         self.center.x = Math.floor(canvas.width / 2);
         self.center.y = Math.floor(canvas.height / 2);
+    };
+
+    self.init = function() {
+        canvas = document.getElementById('canvas');
+        context = canvas.getContext('2d');
+
+        canvas.style.backgroundColor = "#b3e5fc";
+        window.onresize = resize;
+        resize();
 
         // Display message asking for name if not set.
         Cookie.set('username', 'cairns');
@@ -42,19 +47,6 @@ var Game = (function() {
                 break;
             case 1:
                 Map.init(canvas);
-                // TODO Maybe possible to make some better timing with the redraw.
-                // TODO Move to it's own function.
-                // TODO Map resize and canvas resize might not bee needed to be called at the same time. For exampel if the user resizes while resources are beeing loaded.
-                window.onresize = function() {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-
-                    self.size.width = canvas.width;
-                    self.size.height = canvas.height;
-
-                    self.center.x = Math.floor(canvas.width / 2);
-                    self.center.y = Math.floor(canvas.height / 2);
-                };
                 self.setState(2);
                 break;
             case 2:
