@@ -1,3 +1,12 @@
+var State = {
+    PLAYING: 0,
+    CHAT: 1,
+    LOGIN: 2,
+    CONNECTION: 3,
+    MAP: 4,
+    LOADER: 5
+};
+
 var Game = (function() {
     var state;
     var canvas;
@@ -31,77 +40,60 @@ var Game = (function() {
         Resources.init();
         Connection.init();
 
-        self.setState(5);
-
         // Want a draw loop that considers execution time for smoother effect.
         window.setInterval(self.run, 33);
     };
 
     self.run = function() {
-        // TODO Place the most common call at the top and least common at the bottom.
         switch(state) {
-            case 0:
-                if (Loader.done()) {
-                    self.setState(1);
-                }
-                break;
-            case 1:
-                Map.init(canvas);
-                self.setState(2);
-                break;
-            case 2:
+            case State.PLAYING:
+            case State.CHAT:
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 Map.draw(context);
                 Chat.draw(context);
-
-                /*context.beginPath();
-                context.moveTo(self.center.x, 0);
-                context.lineTo(self.center.x, canvas.height);
-                context.closePath();
-                context.stroke();
-
-                context.beginPath();
-                context.moveTo(0, self.center.y);
-                context.lineTo(canvas.width, self.center.y);
-                context.closePath();
-                context.stroke();*/
-                break;
-            case 3:
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                Map.draw(context);
-                Chat.draw(context);
-
                 break;
 
-            case 4:
+            case State.LOGIN:
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 Login.draw(context);
                 break;
 
-            case 5:
+            case State.CONNECTION:
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 Connection.draw(context);
+                break;
+
+            case State.MAP:
+                Map.init(canvas);
+                self.setState(State.PLAYING);
+                break;
+
+            case State.LOADER:
+                if (Loader.done()) {
+                    self.setState(State.MAP);
+                }
                 break;
         }
     };
 
     self.setState = function(s) {
         switch(s) {
-            case 0:
-                document.removeEventListener('keypress', Login.listener, true);
-                break;
-            case 2:
-                console.log('TWO');
+            case State.PLAYING:
                 Chat.deactivate();
                 document.addEventListener('keydown', Map.listener, true);
                 break;
-            case 3:
-                console.log('THREE');
+
+            case State.CHAT:
                 document.removeEventListener('keydown', Map.listener, true);
                 Chat.activate();
                 break;
-            case 4:
+
+            case State.LOGIN:
                 document.addEventListener('keypress', Login.listener, true);
+                break;
+
+            case State.LOADER:
+                document.removeEventListener('keypress', Login.listener, true);
                 break;
         }
         state = s;
@@ -110,17 +102,20 @@ var Game = (function() {
     self.received = function(data) {
         console.log(data);
         switch (data.action) {
-            case 'login':
-                Login.received(data);
+            case 'move':
+                Map.character(data.username, data.user);
                 break;
+
             case 'chat':
                 Chat.received(data);
                 break;
+
+            case 'login':
+                Login.received(data);
+                break;
+
             case 'connected':
                 Chat.add(data.username, 'Has connected.');
-                break;
-            case 'move':
-                Map.character(data.username, data.user);
                 break;
         }
     };

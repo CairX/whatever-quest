@@ -60,7 +60,7 @@ var Login = (function() {
             case 'success':
                 Cookie.set('username', username);
                 Chat.add('Game', 'Welcome to Whatever Quest!');
-                Game.setState(0);
+                Game.setState(State.LOADER);
                 break;
             case 'exists':
                 status = 'Username already taken.'

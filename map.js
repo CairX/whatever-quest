@@ -87,33 +87,25 @@ var Map = (function() {
     };
 
     self.listener = function(event) {
-        console.log(event);
         switch(event.which) {
             case 87:
-            //case 119:
-                console.log("UP");
                 Map.up();
                 break;
+
             case 83:
-            //case 115:
-                console.log("DOWN");
                 Map.down();
                 break;
+
             case 65:
-            //case 97:
-                console.log("LEFT");
                 Map.left();
                 break;
+
             case 68:
-            //case 100:
-                console.log("RIGHT");
                 Map.right();
                 break;
-            //case 13:
+
             case 84:
-                event.stopPropagation();
-                Game.setState(3);
-                console.log("ENTER");
+                Game.setState(State.CHAT);
                 break;
         }
     };

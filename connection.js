@@ -14,7 +14,7 @@ var Connection = (function() {
         socket.onopen = function() {
             console.log('Connection opened.');
             status = 'Connection opened.';
-            Game.setState(4);
+            Game.setState(State.LOGIN);
         };
         socket.onmessage = function (message) {
             Game.received(JSON.parse(message.data));
@@ -22,7 +22,7 @@ var Connection = (function() {
         socket.onclose = function() {
             console.log('Connection closed.');
             status = "Connection closed.";
-            Game.setState(5);
+            Game.setState(State.CONNECTION);
         };
         socket.onerror = function(error) {
             console.log(error);

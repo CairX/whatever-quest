@@ -66,15 +66,14 @@ var Chat = (function() {
             // Escape
             case 0:
                 message = '';
-                Game.setState(2);
+                Game.setState(State.PLAYING);
                 break;
 
             // Enter
             case 13:
-                //self.add(message);
                 Connection.send({ 'action': 'chat', 'username': Cookie.get('username'), 'chat': message });
                 message = '';
-                Game.setState(2);
+                Game.setState(State.PLAYING);
                 break;
 
             // Backspace
