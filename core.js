@@ -3,7 +3,6 @@ var Game = (function() {
     var canvas;
     var context;
 
-
     var self = {};
     self.size = { width: 0, height: 0 };
     self.center = { x: 0, y: 0 };
@@ -27,7 +26,7 @@ var Game = (function() {
         Resources.init();
         Connection.init();
 
-        self.setState(4);
+        self.setState(5);
 
         // Want a draw loop that considers execution time for smoother effect.
         window.setInterval(self.run, 33);
@@ -74,17 +73,22 @@ var Game = (function() {
                 context.lineTo(canvas.width, self.center.y);
                 context.closePath();
                 context.stroke();*/
-
                 break;
             case 3:
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 Map.draw(context);
                 Chat.draw(context);
+
                 break;
 
             case 4:
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 Login.draw(context);
+                break;
+
+            case 5:
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                Connection.draw(context);
                 break;
         }
     };
@@ -119,6 +123,12 @@ var Game = (function() {
                 break;
             case 'chat':
                 Chat.received(data);
+                break;
+            case 'connected':
+                Chat.add(data.username, 'Has connected.');
+                break;
+            case 'move':
+                Map.character(data.username, data.user);
                 break;
         }
     };

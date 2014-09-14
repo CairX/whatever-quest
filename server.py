@@ -2,7 +2,7 @@ import asyncio
 import json
 import websockets
 
-users = list()
+users = dict()
 
 
 class User(object):
@@ -13,52 +13,71 @@ class User(object):
 
 @asyncio.coroutine
 def broadcast(message):
-    for user in users:
+    disconnected = list()
+
+    for username, user in users.items():
         if user.websocket.open:
             yield from user.websocket.send(json.dumps(message))
         else:
-            try:
-                users.remove(user)
-            except ValueError:
-                pass
+            disconnected.append(username)
+
+    for username in disconnected:
+        try:
+            del users[username]
+            print('Connection removed: ' + username)
+        except KeyError:
+            pass
+
+
+@asyncio.coroutine
+def broadcast_except_self(message):
+    disconnected = list()
+
+    for username, user in users.items():
+        if user.websocket.open:
+            if username != message['username']:
+                yield from user.websocket.send(json.dumps(message))
+        else:
+            disconnected.append(username)
+
+    for username in disconnected:
+        try:
+            del users[username]
+            print('Connection removed: ' + username)
+        except KeyError:
+            pass
 
 
 @asyncio.coroutine
 def login(username, websocket):
-    exists = False
-
-    for user in users:
-        if username == user.name:
-            exists = True
-            break
-
-    if exists:
-        yield from websocket.send('{ "action": "login", "status": "exists" }')
+    if username in users:
+        yield from websocket.send('{"action": "login", "status": "exists"}')
     else:
         user = User(username, websocket)
-        users.append(user)
-        yield from websocket.send('{ "action": "login", "status": "success" }')
+        users[username] = user
+        yield from websocket.send('{"action": "login", "status": "success"}')
+        yield from broadcast({'action': 'connected', 'username': username})
 
 
 @asyncio.coroutine
 def handler(websocket, path):
-    #connections.append(websocket)
-
     while True:
         message = yield from websocket.recv()
         if message is None:
-            print("Remove connection")
+            print("TODO: Remove connection")
             break
 
         message = json.loads(message)
         print(message)
-        action = message.get('action')
-        username = message.get('username')
+        action = message['action']
+        username = message['username']
 
-        if action == 'login':
-            yield from login(username, websocket)
+        if action == 'move':
+            yield from broadcast_except_self(message)
         elif action == 'chat':
             yield from broadcast(message)
+        elif action == 'login':
+            yield from login(username, websocket)
 
 
 start_server = websockets.serve(handler, '0.0.0.0', 8765)
