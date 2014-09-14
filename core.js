@@ -100,13 +100,13 @@ var Game = (function() {
                 break;
             case 2:
                 console.log('TWO');
-                document.removeEventListener('keypress', Chat.listener, true);
+                Chat.deactivate();
                 document.addEventListener('keydown', Map.listener, true);
                 break;
             case 3:
                 console.log('THREE');
                 document.removeEventListener('keydown', Map.listener, true);
-                document.addEventListener('keypress', Chat.listener, true);
+                Chat.activate();
                 break;
             case 4:
                 document.addEventListener('keypress', Login.listener, true);
