@@ -12,6 +12,8 @@ var Game = (function() {
     var canvas;
     var context;
 
+    var timer = {};
+
     var self = {};
     self.size = { width: 0, height: 0 };
     self.center = { x: 0, y: 0 };
@@ -28,6 +30,9 @@ var Game = (function() {
     };
 
     self.init = function() {
+        timer.current = new Date();
+        timer.previous = timer.current;
+
         canvas = document.getElementById('canvas');
         context = canvas.getContext('2d');
 
@@ -45,11 +50,15 @@ var Game = (function() {
     };
 
     self.run = function() {
+        timer.previous = timer.current;
+        timer.current = new Date();
+
         switch(state) {
             case State.PLAYING:
             case State.CHAT:
+                GameMap.update(timer.current - timer.previous);
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                Map.draw(context);
+                GameMap.draw(context);
                 Chat.draw(context);
                 break;
 
@@ -64,7 +73,7 @@ var Game = (function() {
                 break;
 
             case State.MAP:
-                Map.init(canvas);
+                GameMap.init(canvas);
                 self.setState(State.PLAYING);
                 break;
 
@@ -80,11 +89,11 @@ var Game = (function() {
         switch(s) {
             case State.PLAYING:
                 Chat.deactivate();
-                Map.activate();
+                GameMap.activate();
                 break;
 
             case State.CHAT:
-                Map.deactivate();
+                GameMap.deactivate();
                 Chat.activate();
                 break;
 
@@ -103,7 +112,7 @@ var Game = (function() {
         console.log(data);
         switch (data.action) {
             case 'move':
-                Map.character(data.username, data.user);
+                GameMap.character(data.username, data.user);
                 break;
 
             case 'chat':

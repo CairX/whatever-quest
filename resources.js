@@ -14,7 +14,7 @@ var Resources = (function() {
         self.stone.onload = Loader.update;
 
         self.character = new Image();
-        self.character.src = 'character.png';
+        self.character.src = 'character-sprite.png';
         self.character.onload = Loader.update;
     };
 
