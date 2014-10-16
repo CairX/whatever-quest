@@ -60,11 +60,22 @@ def login(username, websocket):
 
 
 @asyncio.coroutine
+def disconnected(websocket):
+    for username, user in users.items():
+        if user.websocket == websocket:
+            print('Disconnected: ' + username)
+            del users[username]
+            break
+
+
+@asyncio.coroutine
 def handler(websocket, path):
     while True:
         message = yield from websocket.recv()
+
+        # Connection lost
         if message is None:
-            print("TODO: Remove connection")
+            yield from disconnected(websocket)
             break
 
         message = json.loads(message)
