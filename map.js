@@ -3,6 +3,13 @@
 
 'use strict';
 
+var Direction = {
+    'UP': 0,
+    'DOWN': 1,
+    'LEFT': 2,
+    'RIGHT': 3
+};
+
 function Character() {
     this.name = Cookie.get('username');
     this.image = Resources.character;
@@ -33,10 +40,10 @@ Character.prototype.update = function(interval) {
         //console.log();
         this.elapsed += interval;
 
-        console.log('E: ' + this.elapsed);
-        console.log('D: ' + this.frameduration);
+        //console.log('E: ' + this.elapsed);
+        //console.log('D: ' + this.frameduration);
         var frame = Math.floor(this.elapsed / this.frameduration);
-        console.log(frame);
+        //console.log(frame);
         // Check this because sometimes the duration can be
         // more then wanted so then the frame would overshot.
         // TODO: Try and find a way to prevent this.
@@ -44,21 +51,65 @@ Character.prototype.update = function(interval) {
             this.frame = frame;
         }
 
-        if (this.position.x < this.target.x) {
-            this.position.x += this.speed * interval;
-            this.color = '#0000FF';
-        } else {
-            this.stop();
+        // TODO: Make a cleaner design pattern for diffrent directions
+        // and animations. Example a dict with functions that can be used
+        // as a switch, like Python. Then use that ambigious method and call
+        // it here.
+        switch (this.direction) {
+            case Direction.UP:
+                if (this.position.y > this.target.y) {
+                    this.position.y -= this.speed * interval;
+                    this.color = '#0000FF';
+                } else {
+                    this.stop();
+                }
+                break;
+            case Direction.DOWN:
+                if (this.position.y < this.target.y) {
+                    this.position.y += this.speed * interval;
+                    this.color = '#0000FF';
+                } else {
+                    this.stop();
+                }
+                break;
+            case Direction.LEFT:
+                if (this.position.x > this.target.x) {
+                    this.position.x -= this.speed * interval;
+                    this.color = '#0000FF';
+                } else {
+                    this.stop();
+                }
+                break;
+            case Direction.RIGHT:
+                if (this.position.x < this.target.x) {
+                    this.position.x += this.speed * interval;
+                    this.color = '#0000FF';
+                } else {
+                    this.stop();
+                }
+                break;
         }
     }
     //console.log(this.position.y);
 };
-Character.prototype.move = function() {
+Character.prototype.move = function(direction) {
     if (!this.animating) {
-        //console.log("MOVE");
-        this.target.x += 16;
-        var distance = this.target.y - this.position.y;
-        this.framedistance = distance / this.frames;
+        switch (direction) {
+            case Direction.UP:
+                this.target.y -= 16;
+                break;
+            case Direction.DOWN:
+                this.target.y += 16;
+                break;
+            case Direction.LEFT:
+                this.target.x -= 16;
+                break;
+            case Direction.RIGHT:
+                this.target.x += 16;
+                break;
+        }
+
+        this.direction = direction;
         this.animating = true;
     }
 };
@@ -74,8 +125,8 @@ var GameMap = (function() {
 
     var tiles;
 
-    var posCharX = 2;
-    var posCharY = 2;
+    //var posCharX = 2;
+    //var posCharY = 2;
 
     var player;
     var characters = {};
@@ -135,29 +186,33 @@ var GameMap = (function() {
     };
 
     self.up = function() {
-        if (posCharY - 1 >= 0) {
-            posCharY -= 1;
-            Connection.send({ 'action': 'move', 'username': Cookie.get('username'), 'user': { 'x': posCharX, 'y': posCharY }});
-        }
+        //if (posCharY - 1 >= 0) {
+            //posCharY -= 1;
+            //Connection.send({ 'action': 'move', 'username': Cookie.get('username'), 'user': { 'x': posCharX, 'y': posCharY }});
+        //}
+        player.move(Direction.UP);
     };
     self.down = function() {
-        if (posCharY + 1 < tiles.length) {
-            posCharY += 1;
-            Connection.send({ 'action': 'move', 'username': Cookie.get('username'), 'user': { 'x': posCharX, 'y': posCharY }});
-        }
+        //if (player.position.y + 1 < (tiles.length * 64)) {
+            //posCharY += 1;
+            //Connection.send({ 'action': 'move', 'username': Cookie.get('username'), 'user': { 'x': posCharX, 'y': posCharY }});
+        //}
+        player.move(Direction.DOWN);
     };
     self.left = function() {
-        if (posCharX -1 >= 0) {
-            posCharX -= 1;
-            Connection.send({ 'action': 'move', 'username': Cookie.get('username'), 'user': { 'x': posCharX, 'y': posCharY }});
-        }
+        //if (posCharX -1 >= 0) {
+        //    posCharX -= 1;
+            //Connection.send({ 'action': 'move', 'username': Cookie.get('username'), 'user': { 'x': posCharX, 'y': posCharY }});
+        ///}
+        player.move(Direction.LEFT);
     };
     self.right = function() {
-        if (posCharX + 1 < tiles[posCharY].length) {
-            posCharX += 1;
-            Connection.send({ 'action': 'move', 'username': Cookie.get('username'), 'user': { 'x': posCharX, 'y': posCharY }});
-            player.move();
-        }
+        //if (posCharX + 1 < tiles[posCharY].length) {
+        //    posCharX += 1;
+        console.log("Test");
+            player.move(Direction.RIGHT);
+            //Connection.send({ 'action': 'move', 'username': Cookie.get('username'), 'user': { 'x': posCharX, 'y': posCharY }});
+        //}
     };
 
     self.activate = function() {
